@@ -1,4 +1,5 @@
 # ShopLite - Starter TP final DevOps
+Branco Aurelien - Marciniak Lucas
 
 ShopLite est un projet de base pour un TP final DevOps.
 
