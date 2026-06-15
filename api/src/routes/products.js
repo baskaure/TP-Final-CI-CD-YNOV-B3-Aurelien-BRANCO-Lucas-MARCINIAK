@@ -11,7 +11,7 @@ router.get("/", async (req, res, next) => {
 
     res.json({
       source: "database",
-      data: result.rows
+      data: result.rows,
     });
   } catch (error) {
     next(error);
