@@ -54,4 +54,26 @@ describe("GET /health — intégration DB", () => {
     expect(res.body).toHaveProperty("timestamp");
     expect(() => new Date(res.body.timestamp).toISOString()).not.toThrow();
   });
+
+  test("expose une version", async () => {
+    const res = await request(app).get("/health");
+
+    expect(res.body).toHaveProperty("version");
+  });
+});
+
+describe("GET /ready — readiness", () => {
+  test("retourne 200 ready: true quand la DB répond", async () => {
+    const res = await request(app).get("/ready");
+
+    expect(res.status).toBe(200);
+    expect(res.body.ready).toBe(true);
+    expect(res.body.checks.database).toBe("ok");
+  });
+
+  test("propage un X-Request-Id dans la réponse", async () => {
+    const res = await request(app).get("/ready");
+
+    expect(res.headers).toHaveProperty("x-request-id");
+  });
 });

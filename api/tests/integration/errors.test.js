@@ -51,4 +51,12 @@ describe("Erreurs 500", () => {
     expect(res.body.status).toBe("error");
     expect(res.body.checks.database).toBe("error");
   });
+
+  test("GET /ready retourne 503 si la DB plante", async () => {
+    const res = await request(app).get("/ready");
+
+    expect(res.status).toBe(503);
+    expect(res.body.ready).toBe(false);
+    expect(res.body.checks.database).toBe("error");
+  });
 });
