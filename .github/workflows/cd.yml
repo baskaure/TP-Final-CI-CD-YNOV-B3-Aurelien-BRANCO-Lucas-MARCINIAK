@@ -50,13 +50,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to production (simulated)
-        run: docker compose up -d --build
+        run: HTTP_PORT=8082 APP_VERSION=production docker compose up -d --build
 
       - name: Wait for services
         run: sleep 15
 
       - name: Smoke test production
-        run: BASE_URL=http://localhost:8080 sh scripts/smoke-test.sh
+        run: BASE_URL=http://localhost:8082 sh scripts/smoke-test.sh
 
       - name: Rollback on failure
         if: failure()
