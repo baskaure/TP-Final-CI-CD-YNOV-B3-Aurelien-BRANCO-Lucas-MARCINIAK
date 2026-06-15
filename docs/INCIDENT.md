@@ -21,36 +21,38 @@
 
 ### Timeline
 
-| Heure | Action                                   | Responsable          | Résultat                  |
-| ----- | ---------------------------------------- | -------------------- | ------------------------- |
-| 10:05 | Détection erreur `/api/products`         | QA                   | Test rouge                |
-| 10:08 | Analyse des logs API (request_id)        | DevOps + Dev API     | Erreur SQL dans la route  |
-| 10:12 | Vérification PostgreSQL                   | DBA                  | Données présentes         |
-| 10:13 | `scripts/backup.sh` (sauvegarde dump)    | DBA                  | Dump horodaté créé        |
-| 10:15 | Décision de rollback                     | PO + Incident Mgr    | Rollback validé           |
-| 10:18 | `scripts/rollback.sh v1.0.0`             | DevOps               | API redémarrée sur v1.0.0 |
-| 10:22 | Smoke test + tests automatisés           | QA                   | Tests verts               |
-| 10:25 | Vérification données post-rollback       | DBA                  | Produits intacts          |
+| Heure | Action                                       | Responsable       | Résultat                              |
+| ----- | -------------------------------------------- | ----------------- | ------------------------------------- |
+| 23:08 | Sauvegarde PostgreSQL préventive             | DBA               | Dump horodaté créé                    |
+| 23:09 | Détection erreur `/api/products`             | QA                | Test rouge (3 échecs)                 |
+| 23:09 | Analyse des logs API (`request_id`)          | DevOps + Dev API  | `column "price_euro" does not exist`  |
+| 23:10 | Vérification PostgreSQL                       | DBA               | Données présentes                     |
+| 23:11 | Décision de rollback                         | PO + Incident Mgr | Revert validé                         |
+| 23:11 | `git revert` + reconstruction de l'API       | DevOps            | API rétablie                          |
+| 23:12 | Tests automatisés + smoke test               | QA                | 28/28 verts                           |
+| 23:12 | Vérification des données après rollback      | DBA               | 4 produits intacts                    |
 
 ### Diagnostic
 
-- **Symptôme** : `GET /api/products` renvoie 500 ; le test d'intégration échoue.
-- **Cause racine** : une modification de la requête SQL dans `api/src/routes/products.js`
-  (colonne inexistante) introduite avec la v1.1.0 casse la lecture des produits.
+- **Symptôme** : `GET /api/products` renvoie 500 ; les tests d'intégration échouent.
+- **Cause racine** : la requête SQL de `api/src/routes/products.js` référence la colonne
+  inexistante `price_euro` au lieu de `price_cents`, ce qui casse la lecture du catalogue.
 - **Outils** : `git log`/`git diff`, logs JSON corrélés par `request_id`, suite Jest.
 
 ### Correction
 
-- Rollback du code vers le tag stable `v1.0.0` via `scripts/rollback.sh v1.0.0`
-  (sauvegarde + logs avant, reconstruction, smoke test après).
+- Annulation de la modification fautive via `git revert` sur la branche `hotfix/products-catalog`,
+  puis reconstruction de l'API (`docker compose up -d --build api`).
+- Alternative outillée disponible : `scripts/rollback.sh v1.0.0` (sauvegarde + logs avant,
+  reconstruction sur le tag stable, smoke test après).
 - **Aucune suppression de volume** : interdiction de `docker compose down -v`.
 - Données PostgreSQL conservées (volume `shoplite_pgdata`).
 
 ### Mini-message incident
 
-> **Impact** : catalogue ShopLite indisponible en staging (~20 min).
-> **Cause** : requête SQL invalide introduite en v1.1.0.
-> **Action** : rollback vers v1.0.0, données préservées.
+> **Impact** : catalogue ShopLite indisponible (~4 min), API et readiness OK par ailleurs.
+> **Cause** : requête SQL invalide (`price_euro` au lieu de `price_cents`).
+> **Action** : `git revert` de la modification fautive, données préservées.
 > **Statut** : résolu, service rétabli, post-mortem documenté.
 
 ### Prévention
