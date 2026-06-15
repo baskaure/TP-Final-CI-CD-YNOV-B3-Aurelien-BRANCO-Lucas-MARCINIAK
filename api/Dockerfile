@@ -1,13 +1,30 @@
-FROM node:20-alpine
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev --no-optional && \
+    find ./node_modules -name "*.md" -delete 2>/dev/null; \
+    find ./node_modules -name "*.map" -delete 2>/dev/null; \
+    find ./node_modules -name "CHANGELOG*" -delete 2>/dev/null; \
+    find ./node_modules -name "LICENSE*" -delete 2>/dev/null; \
+    find ./node_modules -name "HISTORY*" -delete 2>/dev/null; \
+    find ./node_modules -name "AUTHORS*" -delete 2>/dev/null; \
+    find ./node_modules -name "*.ts" ! -name "*.d.ts" -delete 2>/dev/null; \
+    find ./node_modules -name "test" -type d -exec rm -rf {} + 2>/dev/null; \
+    find ./node_modules -name "__tests__" -type d -exec rm -rf {} + 2>/dev/null; \
+    true
+
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV API_PORT=3000
+ENV LOG_LEVEL=info
+ENV DATABASE_URL=""
 
-COPY package*.json ./
-RUN npm ci --omit=dev
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY src ./src
 
 USER node
