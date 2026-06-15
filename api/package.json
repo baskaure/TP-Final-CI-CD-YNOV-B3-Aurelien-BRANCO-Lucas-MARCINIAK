@@ -23,6 +23,8 @@
     "supertest": "^7.0.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["lcov", "text", "json-summary"]
   }
 }

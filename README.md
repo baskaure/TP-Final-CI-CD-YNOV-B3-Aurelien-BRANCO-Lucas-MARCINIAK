@@ -1,6 +1,11 @@
 # ShopLite - Starter TP final DevOps
 Branco Aurelien - Marciniak Lucas
 
+[![CI](https://github.com/baskaure/TP-Final-CI-CD-YNOV-B3-Aurelien-BRANCO-Lucas-MARCINIAK/actions/workflows/ci.yml/badge.svg)](https://github.com/baskaure/TP-Final-CI-CD-YNOV-B3-Aurelien-BRANCO-Lucas-MARCINIAK/actions/workflows/ci.yml)
+[![CD](https://github.com/baskaure/TP-Final-CI-CD-YNOV-B3-Aurelien-BRANCO-Lucas-MARCINIAK/actions/workflows/cd.yml/badge.svg)](https://github.com/baskaure/TP-Final-CI-CD-YNOV-B3-Aurelien-BRANCO-Lucas-MARCINIAK/actions/workflows/cd.yml)
+![Node](https://img.shields.io/badge/node-20%20%7C%2022-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
 ShopLite est un projet de base pour un TP final DevOps.
 
 Les etudiants recoivent uniquement ce socle applicatif :
