@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
       checks: { api: "ok", database: "ok" },
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     res.status(503).json({
       ready: false,
       checks: { api: "ok", database: "error" },

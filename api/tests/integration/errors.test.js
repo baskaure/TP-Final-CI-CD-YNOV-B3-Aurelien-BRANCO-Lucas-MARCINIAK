@@ -28,6 +28,18 @@ describe("Erreurs 404", () => {
   });
 });
 
+describe("Erreurs 400", () => {
+  test("corps JSON invalide retourne 400", async () => {
+    const res = await request(app)
+      .post("/")
+      .set("Content-Type", "application/json")
+      .send('{"name": ');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error", "Bad request");
+  });
+});
+
 describe("Erreurs 500", () => {
   beforeEach(() => {
     jest.spyOn(db, "query").mockRejectedValue(new Error("DB crash simulé"));

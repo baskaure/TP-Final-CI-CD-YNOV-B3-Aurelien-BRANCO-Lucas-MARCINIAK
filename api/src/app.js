@@ -29,13 +29,18 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  const status = err.status || err.statusCode || 500;
+
   log.error({
     request_id: req.id,
     message: err.message,
+    status,
     path: req.originalUrl,
   });
 
-  res.status(500).json({ error: "Internal server error" });
+  res.status(status).json({
+    error: status === 400 ? "Bad request" : "Internal server error",
+  });
 });
 
 module.exports = app;
