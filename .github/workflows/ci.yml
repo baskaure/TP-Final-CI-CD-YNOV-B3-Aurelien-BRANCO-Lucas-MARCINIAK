@@ -120,7 +120,7 @@ jobs:
         run: docker build -t shoplite-api:scan ./api
 
       - name: Scan image avec Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: shoplite-api:scan
           format: table
@@ -131,7 +131,7 @@ jobs:
 
       - name: Rapport Trivy (SARIF)
         if: always()
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: shoplite-api:scan
           format: sarif
