@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   const checks = {
     api: "ok",
-    database: "unknown"
+    database: "unknown",
   };
 
   let status = 200;
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
   try {
     await db.query("SELECT 1");
     checks.database = "ok";
-  } catch (error) {
+  } catch {
     checks.database = "error";
     status = 503;
   }
@@ -22,8 +22,9 @@ router.get("/", async (req, res) => {
   res.status(status).json({
     status: status === 200 ? "ok" : "error",
     service: "shoplite-api",
+    version: process.env.APP_VERSION || "dev",
     checks,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
